@@ -1,45 +1,18 @@
 #include <Arduino.h>
-
 #include "main.h"
 
-#include <driver/dac.h>
-#include <WiFi.h>
-#include <SPI.h>
-#include <TimeLib.h>
-#include <Time.h>
-#include <Timezone.h>
-#include <DNSServer.h>
-#include <WebServer.h>
 #include <ESPmDNS.h>
-
+#include <Time.h>
+#include <TimeLib.h>
+#include <WiFi.h>
 #include <WiFiManager.h> //https://github.com/tzapu/WiFiManager
-
-
-
-#include <Vector.h>
-
-#include <stdio.h>
-#include <stdlib.h>
-
-#include "ArduinoNvs.h"
-#include "Button2.h"
-
-#if PLAY_SOUNDS
-#include <melody_player.h>
-#include <melody_factory.h>
-#endif
 
 static const char *TAG = "main";
 
 // Instantiate the WifiManager object
 WiFiManager wifiManager;
-
 boolean firstConnection = false;
-
 time_t lastRunWifiCheck;
-
-bool resNVS; // NVS Result
-uint time_offset;
 
 // from WifiManager
 /** IP to String? */
@@ -98,30 +71,7 @@ String WIFI_GetPassword()
   }
   return mPassword;
 }
-const char *wl_status_to_string(uint8_t status)
-{
 
-  switch (status)
-  {
-  case WL_NO_SHIELD:
-    return "WL_NO_SHIELD";
-  case WL_IDLE_STATUS:
-    return "WL_IDLE_STATUS";
-  case WL_NO_SSID_AVAIL:
-    return "WL_NO_SSID_AVAIL";
-  case WL_SCAN_COMPLETED:
-    return "WL_SCAN_COMPLETED";
-  case WL_CONNECTED:
-    return "WL_CONNECTED";
-  case WL_CONNECT_FAILED:
-    return "WL_CONNECT_FAILED";
-  case WL_CONNECTION_LOST:
-    return "WL_CONNECTION_LOST";
-  case WL_DISCONNECTED:
-    return "WL_DISCONNECTED";
-  }
-  return "Unknown error";
-}
 // Attempt to connect to WiFi
 boolean WIFI_Connect()
 {
@@ -175,26 +125,7 @@ void setup()
 
   lastRunWifiCheck = now();
 
-  // Storage retrival of timezone offset from NVS Storage.
-  time_offset = DEFAULT_TIME_OFFSET;
-  NVS.begin();
-  int nvsTimeOffset = NVS.getInt("time_offset");
-  Serial.print("nvsTimeOffset: ");
-  Serial.println(nvsTimeOffset);
-
-  if (nvsTimeOffset == 0 || nvsTimeOffset < 400)
-  {
-    Serial.println("time_offset not found in NVS, using default");
-  }
-  else
-  {
-    time_offset = nvsTimeOffset - 500;
-  }
-  Serial.print("time_offset: ");
-  Serial.println(time_offset);
-
 #if WIFI_ENABLED
-
   wifiManager.setDebugOutput(true);
 
   //  Reset saved settings for testing purposes
@@ -203,7 +134,6 @@ void setup()
 
   wifiManager.setHostname(HOSTNAME);
   wifiManager.setCountry("US");
-  
 
   WiFi.disconnect();
   WiFi.mode(WIFI_STA);
@@ -217,11 +147,11 @@ void setup()
   if (!hasWifiBeenConfigured())
   {
     Serial.println("Starting Wifi AP");
-   
+
     wifiManager.setConfigPortalBlocking(false);
     wifiManager.startConfigPortal(AP_NAME);
-    wifiManager.setDebugOutput(true);
     firstConnection = true;
+    wifiManager.setDebugOutput(true);
   }
   else
   {
@@ -229,12 +159,6 @@ void setup()
     WIFI_Connect();
   }
 #endif
-
-#if PLAY_SOUNDS
-  // init the filesystem
-  SPIFFS.begin();  
-#endif
-
 
   Serial.println("Ready!");
 }
@@ -245,7 +169,7 @@ void setup()
 
 void loop()
 {
- #if WIFI_ENABLED
+#if WIFI_ENABLED
   // Check WiFi connectivity and restart it if it fails.
   if ((((now() - lastRunWifiCheck) / 60) >= WIFI_CHECK_INTERVAL) && (hasWifiBeenConfigured()))
   {
@@ -264,5 +188,4 @@ void loop()
   if (wifiManager.getWebPortalActive() || wifiManager.getConfigPortalActive())
     wifiManager.process();
 #endif
-
 }

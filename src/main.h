@@ -15,11 +15,8 @@
 
 #define WIFI_ENABLED true
 
-#define PLAY_SOUNDS true
-
 #define DEFAULT_TIME_OFFSET -8
 
-#define WM_DEBUG_LEVEL DEBUG_DEV
 // ***************************************************************
 // End of user configuration items
 // ***************************************************************
