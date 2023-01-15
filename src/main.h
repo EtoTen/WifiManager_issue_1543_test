@@ -17,6 +17,12 @@
 
 #define DEFAULT_TIME_OFFSET -8
 
+#define LOG_LOCAL_LEVEL ESP_LOG_DEBUG
+
+#define DEBUG_ESP_PORT Serial
+#define WM_DEBUG_PORT Serial
+#define WM_DEBUG_LEVEL  DEBUG_MAX
+
 // ***************************************************************
 // End of user configuration items
 // ***************************************************************

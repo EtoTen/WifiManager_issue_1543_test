@@ -1,11 +1,17 @@
-#include <Arduino.h>
 #include "main.h"
-
-#include <ESPmDNS.h>
-#include <Time.h>
-#include <TimeLib.h>
+#include <Arduino.h>
+#include <driver/dac.h>
 #include <WiFi.h>
+#include <SPI.h>
+#include <TimeLib.h>
+#include <Time.h>
+#include <Timezone.h>
+#include <ESPmDNS.h>
 #include <WiFiManager.h> //https://github.com/tzapu/WiFiManager
+
+#include <stdio.h>
+#include <stdlib.h>
+
 
 static const char *TAG = "main";
 
@@ -116,10 +122,11 @@ boolean WIFI_Connect()
 
 void setup()
 {
-
   // Configure serial interface
   Serial.begin(115200);
   delay(800); // alows serial to start, or else initial messages are lost
+  Serial.setDebugOutput(true);
+  esp_log_level_set("*", ESP_LOG_DEBUG);
 
   Serial.println("Starting...");
 
